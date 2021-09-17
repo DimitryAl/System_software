@@ -52,6 +52,8 @@ Func _IsAnyKeyPressed($UseNames=0)
     Return 0
 EndFunc
 
+
+
 Local Const $sFilePath = (@ScriptDir & "\log.txt")
 
 Local $iFileExists = FileExists($sFilePath)
@@ -93,9 +95,12 @@ While 1
 	  $logString = _NowDate() & " " & _NowTime(3) & " Program closed."
 	  FileWriteLine($logFile, $logString)
    EndIf
+   ;мб через HotKeySet выход из цикла
 WEnd
+
+
 
 FileClose($logFile)
 
-;WinClose("Symbol input programm")
+
 
