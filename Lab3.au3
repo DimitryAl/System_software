@@ -69,6 +69,12 @@ If $logFile = -1 Then
 EndIf
 
 While 1
+   ;обработка открытия окна
+   If WinExists("Symbol input program") = 0 Then
+	  WinWaitActive("Symbol input program")
+	  $logString = _NowDate() & " " & _NowTime(3) & " Program started."
+	  FileWriteLine($logFile, $logString)
+   EndIf
    $hProgram = WinActive("Symbol input program")
    If $hProgram Then	;Checks to see if a specified window exists and is currently active.
 	  ;While 1
@@ -82,13 +88,14 @@ While 1
 		 EndIf
 	  ;WEnd
    EndIf
+   ;обработка закрытия окна
+   If WinExists("Symbol input program") = 0 Then
+	  $logString = _NowDate() & " " & _NowTime(3) & " Program closed."
+	  FileWriteLine($logFile, $logString)
+   EndIf
 WEnd
 
-
-
 FileClose($logFile)
-
-
 
 ;WinClose("Symbol input programm")
 
