@@ -1,16 +1,28 @@
-#include <windows.h>// заголовочный файл, содержащий функции API
+#include <windows.h>        // заголовочный файл, содержащий функции API
+//#include <shellapi.h>
+#include <string>
+
 
 LRESULT CALLBACK WindowProcess(HWND,// дескриптор окошка
     UINT,// сообщение, посылаемое ОС
     WPARAM,// параметры
     LPARAM);// сообщений, для последующего обращения
 
+LPSTR lpArgv;
+
 int WINAPI WinMain(HINSTANCE hInst, // указатель на текущий экземпляр
     HINSTANCE hPrevInst, /// указатель на предыдущйи запушенный экземпляр
     LPSTR pCommandLine, // нужен для запуска окошка в режиме командной строки
     int nCommandShow)  // режим отображения окна
 {
-    TCHAR className[] = "Мой класс";
+    
+    lpArgv = GetCommandLine();
+    if (NULL == lpArgv)
+    {
+        return 0;
+    }
+
+    TCHAR className[] = "My class";
     HWND hWindow; // создаём дескриптор будущего окошка
     MSG message; // создём экземпляр структуры MSG для обработки сообщений
     WNDCLASSEX windowClass;// создаём экземпляр, для обращения к членам класса WNDCLASSEX
@@ -31,9 +43,9 @@ int WINAPI WinMain(HINSTANCE hInst, // указатель на текущий экземпляр
         MessageBox(NULL, "Не получилось зарегистрировать класс!", "Ошибка", MB_OK);
         return NULL;
     }
-    // Функция, создающая окошко:
+    // Функция, создающая окошко:O
     hWindow = CreateWindow(className,
-        "Программа ввода символов",
+        "Symbol input program",
         WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT,
         NULL,
@@ -53,6 +65,7 @@ int WINAPI WinMain(HINSTANCE hInst, // указатель на текущий экземпляр
         TranslateMessage(&message);// интерпретируем сообщения
         DispatchMessage(&message);// передаём сообщения обратно ОС
     }
+    //LocalFree(lpArgv);
     return message.wParam;// возвращаем код выхода из приложения
 }
 
@@ -68,13 +81,15 @@ LRESULT CALLBACK WindowProcess(HWND hWindow, // дескриптор окна
 
     static PTCHAR text; //PTCHAR — указатель на тип TCHAR.
     static int size = 0;
-    static int fontsize = 100;
+    static int fontsize = 20;
 
     switch (uMessage)
     {
     case WM_CREATE:
-        //Конструкция создания, использования, удаления буфера выглядит так:
-        text = (PTCHAR)GlobalAlloc(GPTR, 50000 * sizeof(TCHAR));
+        
+        //text = (PTCHAR)GlobalAlloc(GPTR, 50000 * sizeof(TCHAR));
+        text = lpArgv;
+        size = strlen(text);
         break;
     case WM_PAINT: // если нужно нарисовать, то:
         hDeviceContext = BeginPaint(hWindow, &paintStruct);// инициализируем контекст устройства
@@ -89,9 +104,10 @@ LRESULT CALLBACK WindowProcess(HWND hWindow, // дескриптор окна
         if (wParameter != VK_RETURN)
             DrawText(hDeviceContext,
                 (LPCSTR)text,
+                //lpArgv,
                 size,
+                //-1,
                 &rectPlace, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
-
         EndPaint(hWindow, &paintStruct);
         break;
     case WM_KEYDOWN:

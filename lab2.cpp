@@ -19,7 +19,7 @@ int WINAPI WinMain(HINSTANCE hInst, // указатель на текущий экземпляр
     LPSTR pCommandLine, // нужен для запуска окошка в режиме командной строки
     int nCommandShow)  // режим отображения окна
 {
-    TCHAR className[] = "My class";
+    TCHAR className[] = L"My class";
     HWND hWindow; // создаём дескриптор будущего окошка
     MSG message; // создём экземпляр структуры MSG для обработки сообщений
     WNDCLASSEX windowClass;// создаём экземпляр, для обращения к членам класса WNDCLASSEX
@@ -37,12 +37,12 @@ int WINAPI WinMain(HINSTANCE hInst, // указатель на текущий экземпляр
     windowClass.hInstance = hInst;
     if (!RegisterClassEx(&windowClass)) {
         // в случае отсутствия регистрации класса:
-        MessageBox(NULL, "Не получилось зарегистрировать класс!", "Ошибка", MB_OK);
+        MessageBox(NULL, L"Не получилось зарегистрировать класс!", L"Ошибка", MB_OK);
         return NULL;
     }
     // Функция, создающая окошко:
     hWindow = CreateWindow(className,
-        "Lab2",
+        L"Lab2",
         WS_OVERLAPPEDWINDOW | WS_VISIBLE,
         CW_USEDEFAULT,
         NULL,
@@ -53,7 +53,7 @@ int WINAPI WinMain(HINSTANCE hInst, // указатель на текущий экземпляр
         HINSTANCE(hInst),
         NULL);
     if (!hWindow) {
-        MessageBox(NULL, "Не получилось создать окно!", "Ошибка", MB_OK);
+        MessageBox(NULL, L"Не получилось создать окно!", L"Ошибка", MB_OK);
         return NULL;
     }
     ShowWindow(hWindow, nCommandShow);// отображаем окошко
@@ -88,15 +88,16 @@ LRESULT CALLBACK WindowProcess(HWND hWindow, // дескриптор окна
     case WM_COMMAND:
         if (wParameter == IDB_Button1)
         {
-            wchar_t text[100];
+            TCHAR text[256];
             GetWindowTextW(hEdit, text, 100);
-            MessageBox(hWindow, "btn1", "Message WM_COMMAND", MB_OK);
+            MessageBox(hWindow, L"btn1", L"Message WM_COMMAND", MB_OK);
             //start first program
             STARTUPINFO cif;
             ZeroMemory(&cif, sizeof(STARTUPINFO));
             PROCESS_INFORMATION pi;
-            BOOL myProc = CreateProcess("c:\\windows\\notepad.exe",
-                NULL,
+          
+            BOOL myProc = CreateProcess(L"E:\\Dimas\\Study\\MAI\\7 term\\System software\\labs\\1\\Test4\\x64\\Debug\\Test4.exe",
+                text,
                 NULL, 
                 NULL, 
                 FALSE, 
@@ -107,7 +108,7 @@ LRESULT CALLBACK WindowProcess(HWND hWindow, // дескриптор окна
                 &pi);
             if (myProc == TRUE)
             {
-                Sleep(10000);				// подождать
+                Sleep(5000);				// подождать
                 TerminateProcess(pi.hProcess, NO_ERROR);	// убрать процесс
             }
         }
@@ -125,8 +126,8 @@ LRESULT CALLBACK WindowProcess(HWND hWindow, // дескриптор окна
 void AddButton(HWND hWindow)
 {
     HWND hwndButton = CreateWindow(
-        "BUTTON",  // Predefined class; Unicode assumed 
-        "Start program",      // Button text 
+        L"BUTTON",  // Predefined class; Unicode assumed 
+        L"Start program",      // Button text 
         WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,  // Styles 
         200,         // x position 
         250,         // y position 
@@ -142,8 +143,8 @@ void AddControls(HWND hWindow)
 {
     //HWND hEdit;
 
-    CreateWindow("static",
-        "Enter data for first program:",
+    CreateWindow(L"static",
+        L"Enter data for first program:",
         WS_VISIBLE | WS_CHILD | WS_BORDER | SS_CENTER,
         200,
         100,
@@ -154,9 +155,9 @@ void AddControls(HWND hWindow)
         NULL,
         NULL);
 
-    hEdit = CreateWindow( "Edit",
-        "Your text",
-        WS_VISIBLE | WS_CHILD | WS_BORDER | SS_CENTER | ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL,
+    hEdit = CreateWindow( L"Edit",
+        L"Your text",
+        WS_VISIBLE | WS_CHILD | WS_BORDER | SS_CENTER | /*ES_MULTILINE |*/ ES_AUTOVSCROLL | ES_AUTOHSCROLL,
         200,
         150,
         200,
