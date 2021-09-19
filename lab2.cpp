@@ -1,14 +1,15 @@
 #include <windows.h>
+#include <string>
 
-#define CHANGE_TITLE
-
+// Идентификаторы кнопок
+#define IDB_Button1 1
 
 LRESULT CALLBACK WindowProcess(HWND,// дескриптор окошка
     UINT,// сообщение, посылаемое ОС
     WPARAM,// параметры
     LPARAM);// сообщений, для последующего обращения
 
-void AddControls(HWND);
+void AddControls(HWND hWindow);
 void AddButton(HWND hWindow);
 
 HWND hEdit;
@@ -84,14 +85,33 @@ LRESULT CALLBACK WindowProcess(HWND hWindow, // дескриптор окна
         AddButton(hWindow);
         AddControls(hWindow);
         break;
-    /*case WM_COMMAND:
-        switch (wParameter)
+    case WM_COMMAND:
+        if (wParameter == IDB_Button1)
         {
-        case CHANGE_TITLE:
             wchar_t text[100];
             GetWindowTextW(hEdit, text, 100);
-            break;
-        }*/
+            MessageBox(hWindow, "btn1", "Message WM_COMMAND", MB_OK);
+            //start first program
+            STARTUPINFO cif;
+            ZeroMemory(&cif, sizeof(STARTUPINFO));
+            PROCESS_INFORMATION pi;
+            BOOL myProc = CreateProcess("c:\\windows\\notepad.exe",
+                NULL,
+                NULL, 
+                NULL, 
+                FALSE, 
+                NULL,
+                NULL,
+                NULL, 
+                &cif, 
+                &pi);
+            if (myProc == TRUE)
+            {
+                Sleep(10000);				// подождать
+                TerminateProcess(pi.hProcess, NO_ERROR);	// убрать процесс
+            }
+        }
+        break;
     case WM_DESTROY:
         PostQuitMessage(NULL);
         GlobalFree((HGLOBAL)text);
@@ -106,14 +126,14 @@ void AddButton(HWND hWindow)
 {
     HWND hwndButton = CreateWindow(
         "BUTTON",  // Predefined class; Unicode assumed 
-        "Send",      // Button text 
-        WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,  // Styles 
+        "Start program",      // Button text 
+        WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,  // Styles 
         200,         // x position 
         250,         // y position 
-        100,        // Button width
+        200,        // Button width
         50,        // Button height
         hWindow,     // Parent window
-        NULL,       // No menu.
+        (HMENU) IDB_Button1,       // No menu.
         (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE),
         NULL);      // Pointer not needed.
 }
@@ -123,11 +143,11 @@ void AddControls(HWND hWindow)
     //HWND hEdit;
 
     CreateWindow("static",
-        "Enter your text below:",
+        "Enter data for first program:",
         WS_VISIBLE | WS_CHILD | WS_BORDER | SS_CENTER,
         200,
         100,
-        100,
+        200,
         50,
         hWindow,
         NULL,
@@ -139,7 +159,7 @@ void AddControls(HWND hWindow)
         WS_VISIBLE | WS_CHILD | WS_BORDER | SS_CENTER | ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL,
         200,
         150,
-        100,
+        200,
         50,
         hWindow,
         NULL,
