@@ -12,6 +12,19 @@ LRESULT CALLBACK WindowProcess(HWND,// дескриптор окошка
 void AddControls(HWND hWindow);
 void AddButton(HWND hWindow);
 
+HWND g_HWND = NULL;
+BOOL CALLBACK EnumWindowsProcMy(HWND hwnd, LPARAM lParam)
+{
+    DWORD lpdwProcessId;
+    GetWindowThreadProcessId(hwnd, &lpdwProcessId);
+    if (lpdwProcessId == lParam)
+    {
+        g_HWND = hwnd;
+        return FALSE;
+    }
+    return TRUE;
+}
+
 HWND hEdit;
 
 int WINAPI WinMain(HINSTANCE hInst, // указатель на текущий экземпл€р
@@ -90,7 +103,7 @@ LRESULT CALLBACK WindowProcess(HWND hWindow, // дескриптор окна
         {
             TCHAR text[256];
             GetWindowTextW(hEdit, text, 100);
-            MessageBox(hWindow, L"btn1", L"Message WM_COMMAND", MB_OK);
+            MessageBox(hWindow, L"Trying to start program", L"Program start", MB_OK);
             //start first program
             STARTUPINFO cif;
             ZeroMemory(&cif, sizeof(STARTUPINFO));
@@ -106,11 +119,15 @@ LRESULT CALLBACK WindowProcess(HWND hWindow, // дескриптор окна
                 NULL, 
                 &cif, 
                 &pi);
-            if (myProc == TRUE)
-            {
-                Sleep(5000);				// подождать
-                TerminateProcess(pi.hProcess, NO_ERROR);	// убрать процесс
-            }
+            //if (myProc == TRUE)
+            //{
+            //    Sleep(5000);				// подождать
+            //    TerminateProcess(pi.hProcess, NO_ERROR);	// убрать процесс
+            //}
+            //else MessageBox(hWindow, L"Failed to start program", L"Program start", MB_OK);
+            EnumWindows(EnumWindowsProcMy, pi.dwProcessId);
+            HWND g_HWND2 = g_HWND;
+            int test = 0;
         }
         break;
     case WM_DESTROY:
