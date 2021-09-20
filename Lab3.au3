@@ -14,6 +14,8 @@
 ;#include <WinAPIFiles.au3>
 #include <Misc.au3>	;function from this lib is used in _IsAnyKeyPressed
 #include <Date.au3>
+;#include <SendMessage.au3>
+
 
 Func _IsAnyKeyPressed($UseNames=0)
     $number = StringSplit("01|02|04|05|06" & _
@@ -54,12 +56,24 @@ EndFunc
 
 
 HotKeySet("+!e", "Terminate")	;Shift+Alt+e
+;HotKeySet("+!s", "Send_")		;Shift+Alt+s
+HotKeySet("s", "Send_")
 Func Terminate()
    FileClose($logFile)
    MsgBox($MB_SYSTEMMODAL, "Lab3", "Script terminated ☠.")
    Exit
 EndFunc
+Func Send_()
+   ;Local $hWnd = WinGetHandle('$ClassName')
+   Local Const $MyMessage = "s"
+   $logString = _NowDate() & " " & _NowTime(3) & " Sent: " & $MyMessage
+   FileWriteLine($logFile, $logString)
+   MsgBox($MB_SYSTEMMODAL, "Lab3", "You pressed Shift+Alt+s.")
+   Send($MyMessage)
+EndFunc
 
+Local Const $WindowName = "Symbol input program"
+Local Const $ClassName = "My class"
 Local Const $sFilePath = (@ScriptDir & "\log.txt")
 Local $iFileExists = FileExists($sFilePath)
 
@@ -77,12 +91,12 @@ EndIf
 
 While 1
    ;обработка открытия окна
-   If WinExists("Symbol input program") = 0 Then
-	  WinWaitActive("Symbol input program")
+   If WinExists($WindowName) = 0 Then
+	  WinWaitActive($WindowName)
 	  $logString = _NowDate() & " " & _NowTime(3) & " Program started."
 	  FileWriteLine($logFile, $logString)
    EndIf
-   $hProgram = WinActive("Symbol input program")
+   $hProgram = WinActive($WindowName)
    If $hProgram Then	;Checks to see if a specified window exists and is currently active.
 	  ;While 1
 		 $key=_IsAnyKeyPressed(1)
@@ -94,7 +108,7 @@ While 1
 	  ;WEnd
    EndIf
    ;обработка закрытия окна
-   If WinExists("Symbol input program") = 0 Then
+   If WinExists($WindowName) = 0 Then
 	  $logString = _NowDate() & " " & _NowTime(3) & " Program closed."
 	  FileWriteLine($logFile, $logString)
    EndIf
