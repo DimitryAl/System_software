@@ -34,8 +34,8 @@ Func _IsAnyKeyPressed($UseNames=0)
     "|SPACEBAR|PAGEUP|PAGEDOWN|END|HOME|LEFT ARROW" & _
     "|UP ARROW|RIGHT ARROW|DOWN ARROW|SELECT|PRINT" & _
     "|EXECUTE|PRINT SCREEN|INS|DEL|0|1|2|3|4|5|6|7" & _
-    "|8|9|A|B|C|D|E|F|G|H|I|J|K|L|M|N|O|P|Q|R|S|T|U" & _
-    "|V|W|X|Y|Z|Left Win|Right Win|Num 0|Num 1|Num 2" & _
+    "|8|9|a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u" & _
+    "|v|w|x|y|z|Left Win|Right Win|Num 0|Num 1|Num 2" & _
     "|Num 3|Num 4|Num 5|Num 6|Num 7|Num 8|Num 9|Multiply" & _
     "|Add|Separator|Subtract|Decimal|Divide|F1|F2|F3|F4" & _
     "|F5|F6|F7|F8|F9|F10|F11|F12|NUMLOCK|SCROLLLOCK|Left SHIFT" & _
@@ -57,23 +57,34 @@ EndFunc
 
 HotKeySet("+!e", "Terminate")	;Shift+Alt+e
 ;HotKeySet("+!s", "Send_")		;Shift+Alt+s
-HotKeySet("s", "Send_")
+HotKeySet("+s", "Send_")
 Func Terminate()
    FileClose($logFile)
    MsgBox($MB_SYSTEMMODAL, "Lab3", "Script terminated ☠.")
    Exit
+EndFunc
+
+;написать просто функцию в которой проверяется нажатие клавиши иесли совпадает, то печатать ее еще раз
+Func Send2_($sym)
+   Local Const $MyMessage = "s"
+   If $sym = $MyMessage Then
+	  $logString = _NowDate() & " " & _NowTime(3) & " Sent: " & $MyMessage
+	  FileWriteLine($logFile, $logString)
+	  Send($MyMessage)
+	  MsgBox($MB_SYSTEMMODAL, "Lab3", "You pressed Shift+Alt+s.")
+   EndIf
 EndFunc
 Func Send_()
    ;Local $hWnd = WinGetHandle('$ClassName')
    Local Const $MyMessage = "s"
    $logString = _NowDate() & " " & _NowTime(3) & " Sent: " & $MyMessage
    FileWriteLine($logFile, $logString)
-   MsgBox($MB_SYSTEMMODAL, "Lab3", "You pressed Shift+Alt+s.")
    Send($MyMessage)
+   MsgBox($MB_SYSTEMMODAL, "Lab3", "You pressed Shift+Alt+s.")
 EndFunc
 
 Local Const $WindowName = "Symbol input program"
-Local Const $ClassName = "My class"
+;Local Const $ClassName = "My class"
 Local Const $sFilePath = (@ScriptDir & "\log.txt")
 Local $iFileExists = FileExists($sFilePath)
 
@@ -98,14 +109,13 @@ While 1
    EndIf
    $hProgram = WinActive($WindowName)
    If $hProgram Then	;Checks to see if a specified window exists and is currently active.
-	  ;While 1
-		 $key=_IsAnyKeyPressed(1)
-		 If $key Then
-			$logString = _NowDate() & " " & _NowTime(3) & " Pressed key: " & $key
-			FileWriteLine($logFile, $logString)
-			Sleep(100)
-		 EndIf
-	  ;WEnd
+	  $key=_IsAnyKeyPressed(1)
+	  If $key Then
+		 $logString = _NowDate() & " " & _NowTime(3) & " Pressed key: " & $key
+		 FileWriteLine($logFile, $logString)
+		 Send2_($key)
+		 Sleep(100)
+	  EndIf
    EndIf
    ;обработка закрытия окна
    If WinExists($WindowName) = 0 Then
