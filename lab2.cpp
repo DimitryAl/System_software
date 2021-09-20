@@ -109,23 +109,17 @@ LRESULT CALLBACK WindowProcess(HWND hWindow, // дескриптор окна
         break;
     case WM_COMMAND:
 
-        STARTUPINFO cif;
-        ZeroMemory(&cif, sizeof(STARTUPINFO));
-        PROCESS_INFORMATION pi;
-
         TCHAR text[256];
         GetWindowTextW(hEdit, text, 100);
 
         if (wParameter == IDB_Button1)
         {
-            //TCHAR text[256];
-            //GetWindowTextW(hEdit, text, 100);
             MessageBox(hWindow, L"Trying to start program", L"Program starting...", MB_OK);
             //start first program
 
-            /*STARTUPINFO cif;
+            STARTUPINFO cif;
             ZeroMemory(&cif, sizeof(STARTUPINFO));
-            PROCESS_INFORMATION pi;*/
+            PROCESS_INFORMATION pi;
           
             BOOL myProc = CreateProcess(L"E:\\Dimas\\Study\\MAI\\7 term\\System software\\labs\\1\\Test4\\Debug\\Test4.exe",
                 text,
