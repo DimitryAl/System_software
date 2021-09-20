@@ -1,6 +1,6 @@
 #include <windows.h>        // заголовочный файл, содержащий функции API
-//#include <shellapi.h>
 #include <string>
+
 
 
 LRESULT CALLBACK WindowProcess(HWND,// дескриптор окошка

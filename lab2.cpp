@@ -3,6 +3,7 @@
 
 // »дентификаторы кнопок
 #define IDB_Button1 1
+#define IDB_Button2 2
 
 LRESULT CALLBACK WindowProcess(HWND,// дескриптор окошка
     UINT,// сообщение, посылаемое ќ—
@@ -12,27 +13,35 @@ LRESULT CALLBACK WindowProcess(HWND,// дескриптор окошка
 void AddControls(HWND hWindow);
 void AddButton(HWND hWindow);
 
-HWND g_HWND = NULL;
-BOOL CALLBACK EnumWindowsProcMy(HWND hwnd, LPARAM lParam)
-{
-    DWORD lpdwProcessId;
-    GetWindowThreadProcessId(hwnd, &lpdwProcessId);
-    if (lpdwProcessId == lParam)
-    {
-        g_HWND = hwnd;
-        return FALSE;
-    }
-    return TRUE;
-}
-
 HWND hEdit;
+
+//HWND WindowHandle = NULL;
+//BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam)
+//{
+//    DWORD pid;
+//    wchar_t ClName[9];
+//    wchar_t MyClass[9] = { L"My class" };
+//    
+//    GetWindowThreadProcessId(hwnd, &pid);
+//    if (pid == lParam)
+//    {
+//        GetClassName(hwnd, ClName, sizeof(ClName)*2);
+//       
+//        if (std::wstring(ClName) == std::wstring(MyClass)) 
+//        {
+//            WindowHandle = hwnd;
+//            return FALSE;
+//        }
+//    }
+//}
+
 
 int WINAPI WinMain(HINSTANCE hInst, // указатель на текущий экземпл€р
     HINSTANCE hPrevInst, /// указатель на предыдущйи запушенный экземпл€р
     LPSTR pCommandLine, // нужен дл€ запуска окошка в режиме командной строки
     int nCommandShow)  // режим отображени€ окна
 {
-    TCHAR className[] = L"My class";
+    TCHAR className[] = L"My class2";
     HWND hWindow; // создаЄм дескриптор будущего окошка
     MSG message; // создЄм экземпл€р структуры MSG дл€ обработки сообщений
     WNDCLASSEX windowClass;// создаЄм экземпл€р, дл€ обращени€ к членам класса WNDCLASSEX
@@ -89,7 +98,7 @@ LRESULT CALLBACK WindowProcess(HWND hWindow, // дескриптор окна
     HFONT hFont; //дескриптор шрифта
 
     static PTCHAR text; //PTCHAR Ч указатель на тип TCHAR.
-    static int size = 0;
+    //static int size = 0;
     static int fontsize = 100;
 
     switch (uMessage)
@@ -99,17 +108,26 @@ LRESULT CALLBACK WindowProcess(HWND hWindow, // дескриптор окна
         AddControls(hWindow);
         break;
     case WM_COMMAND:
+
+        STARTUPINFO cif;
+        ZeroMemory(&cif, sizeof(STARTUPINFO));
+        PROCESS_INFORMATION pi;
+
+        TCHAR text[256];
+        GetWindowTextW(hEdit, text, 100);
+
         if (wParameter == IDB_Button1)
         {
-            TCHAR text[256];
-            GetWindowTextW(hEdit, text, 100);
-            MessageBox(hWindow, L"Trying to start program", L"Program start", MB_OK);
+            //TCHAR text[256];
+            //GetWindowTextW(hEdit, text, 100);
+            MessageBox(hWindow, L"Trying to start program", L"Program starting...", MB_OK);
             //start first program
-            STARTUPINFO cif;
+
+            /*STARTUPINFO cif;
             ZeroMemory(&cif, sizeof(STARTUPINFO));
-            PROCESS_INFORMATION pi;
+            PROCESS_INFORMATION pi;*/
           
-            BOOL myProc = CreateProcess(L"E:\\Dimas\\Study\\MAI\\7 term\\System software\\labs\\1\\Test4\\x64\\Debug\\Test4.exe",
+            BOOL myProc = CreateProcess(L"E:\\Dimas\\Study\\MAI\\7 term\\System software\\labs\\1\\Test4\\Debug\\Test4.exe",
                 text,
                 NULL, 
                 NULL, 
@@ -119,15 +137,33 @@ LRESULT CALLBACK WindowProcess(HWND hWindow, // дескриптор окна
                 NULL, 
                 &cif, 
                 &pi);
-            //if (myProc == TRUE)
-            //{
-            //    Sleep(5000);				// подождать
-            //    TerminateProcess(pi.hProcess, NO_ERROR);	// убрать процесс
-            //}
-            //else MessageBox(hWindow, L"Failed to start program", L"Program start", MB_OK);
-            EnumWindows(EnumWindowsProcMy, pi.dwProcessId);
-            HWND g_HWND2 = g_HWND;
-            int test = 0;
+            if (myProc != TRUE)
+            {
+                MessageBox(hWindow, L"Failed to start program", L"Program starting...", MB_OK);
+            }
+
+            //EnumWindows(EnumWindowsProc, pi.dwProcessId); 
+            
+
+        }
+        if (wParameter == IDB_Button2)
+        {
+            HWND hwndServer = NULL;
+            hwndServer = FindWindowEx(0, 0, L"My class", 0);
+            DWORD b = GetLastError();
+            if (!hwndServer) {
+            //if (!WindowHandle) {
+                MessageBox(NULL, L"ќшибка св€зи!", L"SPO-Lab2.exe", MB_OK);
+            }
+            else { 
+                int len = 256;  //размер text
+                for (int i = 0; i < len + 1; i++) {
+                    char symbol = (char)text[i];
+                    if (symbol == '\0') break;
+                    LRESULT test = SendMessage(hwndServer, WM_CHAR, symbol, 0);
+                    //LRESULT test = SendMessage(WindowHandle, WM_CHAR, text[i], 0);
+                }
+            }
         }
         break;
     case WM_DESTROY:
@@ -154,6 +190,20 @@ void AddButton(HWND hWindow)
         (HMENU) IDB_Button1,       // No menu.
         (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE),
         NULL);      // Pointer not needed.
+
+    HWND hwndButton2 = CreateWindow(
+        L"BUTTON",  // Predefined class; Unicode assumed 
+        L"Send message",      // Button text 
+        WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,  // Styles 
+        500,         // x position 
+        250,         // y position 
+        200,        // Button width
+        50,        // Button height
+        hWindow,     // Parent window
+        (HMENU)IDB_Button2,       // No menu.
+        (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE),
+        NULL);      // Pointer not needed.
+
 }
 
 void AddControls(HWND hWindow) 
