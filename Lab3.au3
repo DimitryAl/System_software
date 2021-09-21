@@ -1,20 +1,15 @@
 #cs ----------------------------------------------------------------------------
-
  AutoIt Version: 3.3.14.5
  Authors:         Dmitry Alexeev M3O-424B-18	Safronof Kirill M3O-424B-18
-
  Script Function:
 	Script for laboratory work №3.
-
 #ce ----------------------------------------------------------------------------
 
 ; Script Start
 
 #include <MsgBoxConstants.au3>
-;#include <WinAPIFiles.au3>
 #include <Misc.au3>	;function from this lib is used in _IsAnyKeyPressed
 #include <Date.au3>
-;#include <SendMessage.au3>
 
 
 Func _IsAnyKeyPressed($UseNames=0)
@@ -56,37 +51,35 @@ EndFunc
 
 
 HotKeySet("+!e", "Terminate")	;Shift+Alt+e
-;HotKeySet("+!s", "Send_")		;Shift+Alt+s
-HotKeySet("+s", "Send_")
+HotKeySet("u", "Send_")			;u
+
+
+Local Const $WindowName = "Symbol input program"
+Local Const $sFilePath = (@ScriptDir & "\log.txt")
+Local $iFileExists = FileExists($sFilePath)
+
 Func Terminate()
    FileClose($logFile)
-   MsgBox($MB_SYSTEMMODAL, "Lab3", "Script terminated ☠.")
+   MsgBox($MB_SYSTEMMODAL, "Lab3", "Script terminated.")
    Exit
 EndFunc
 
-;написать просто функцию в которой проверяется нажатие клавиши иесли совпадает, то печатать ее еще раз
-Func Send2_($sym)
-   Local Const $MyMessage = "s"
-   If $sym = $MyMessage Then
-	  $logString = _NowDate() & " " & _NowTime(3) & " Sent: " & $MyMessage
+Func Send_()
+   $hProgram = WinActive($WindowName)
+   If $hProgram Then
+	  $MyMessage = "{UP}"
+	  $MyMessage_ = "UP ARROW"
+	  $logString = _NowDate() & " " & _NowTime(3) & " Sent: " & $MyMessage_
 	  FileWriteLine($logFile, $logString)
 	  Send($MyMessage)
-	  MsgBox($MB_SYSTEMMODAL, "Lab3", "You pressed Shift+Alt+s.")
+   Else
+	  Local $sText = WinGetTitle("[ACTIVE]")
+	  $MyMessage = "s"
+	  ControlSend($sText, "", "", $MyMessage)
    EndIf
 EndFunc
-Func Send_()
-   ;Local $hWnd = WinGetHandle('$ClassName')
-   Local Const $MyMessage = "s"
-   $logString = _NowDate() & " " & _NowTime(3) & " Sent: " & $MyMessage
-   FileWriteLine($logFile, $logString)
-   Send($MyMessage)
-   MsgBox($MB_SYSTEMMODAL, "Lab3", "You pressed Shift+Alt+s.")
-EndFunc
 
-Local Const $WindowName = "Symbol input program"
-;Local Const $ClassName = "My class"
-Local Const $sFilePath = (@ScriptDir & "\log.txt")
-Local $iFileExists = FileExists($sFilePath)
+
 
 If $iFileExists Then
    MsgBox($MB_SYSTEMMODAL, "Lab3", "The log file exists.")
@@ -113,7 +106,6 @@ While 1
 	  If $key Then
 		 $logString = _NowDate() & " " & _NowTime(3) & " Pressed key: " & $key
 		 FileWriteLine($logFile, $logString)
-		 Send2_($key)
 		 Sleep(100)
 	  EndIf
    EndIf
@@ -123,6 +115,3 @@ While 1
 	  FileWriteLine($logFile, $logString)
    EndIf
 WEnd
-
-
-
