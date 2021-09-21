@@ -15,36 +15,15 @@ void AddButton(HWND hWindow);
 
 HWND hEdit;
 
-//HWND WindowHandle = NULL;
-//BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam)
-//{
-//    DWORD pid;
-//    wchar_t ClName[9];
-//    wchar_t MyClass[9] = { L"My class" };
-//    
-//    GetWindowThreadProcessId(hwnd, &pid);
-//    if (pid == lParam)
-//    {
-//        GetClassName(hwnd, ClName, sizeof(ClName)*2);
-//       
-//        if (std::wstring(ClName) == std::wstring(MyClass)) 
-//        {
-//            WindowHandle = hwnd;
-//            return FALSE;
-//        }
-//    }
-//}
-
-
 int WINAPI WinMain(HINSTANCE hInst, // указатель на текущий экземпляр
     HINSTANCE hPrevInst, /// указатель на предыдущйи запушенный экземпляр
     LPSTR pCommandLine, // нужен для запуска окошка в режиме командной строки
     int nCommandShow)  // режим отображения окна
 {
     TCHAR className[] = L"My class2";
-    HWND hWindow; // создаём дескриптор будущего окошка
-    MSG message; // создём экземпляр структуры MSG для обработки сообщений
-    WNDCLASSEX windowClass;// создаём экземпляр, для обращения к членам класса WNDCLASSEX
+    HWND hWindow; 
+    MSG message; 
+    WNDCLASSEX windowClass;
     windowClass.cbSize = sizeof(windowClass);
     windowClass.style = CS_HREDRAW | CS_VREDRAW;
     windowClass.lpfnWndProc = WindowProcess;
@@ -58,11 +37,9 @@ int WINAPI WinMain(HINSTANCE hInst, // указатель на текущий экземпляр
     windowClass.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
     windowClass.hInstance = hInst;
     if (!RegisterClassEx(&windowClass)) {
-        // в случае отсутствия регистрации класса:
         MessageBox(NULL, L"Не получилось зарегистрировать класс!", L"Ошибка", MB_OK);
         return NULL;
     }
-    // Функция, создающая окошко:
     hWindow = CreateWindow(className,
         L"Lab2",
         WS_OVERLAPPEDWINDOW | WS_VISIBLE,
@@ -78,8 +55,8 @@ int WINAPI WinMain(HINSTANCE hInst, // указатель на текущий экземпляр
         MessageBox(NULL, L"Не получилось создать окно!", L"Ошибка", MB_OK);
         return NULL;
     }
-    ShowWindow(hWindow, nCommandShow);// отображаем окошко
-    UpdateWindow(hWindow);// обновляем окошко
+    ShowWindow(hWindow, nCommandShow);
+    UpdateWindow(hWindow);
     while (GetMessage(&message, NULL, NULL, NULL)) { // извлекаем сообщения из очереди, посылаемые фу-циями, ОС
         TranslateMessage(&message);// интерпретируем сообщения
         DispatchMessage(&message);// передаём сообщения обратно ОС
@@ -87,10 +64,10 @@ int WINAPI WinMain(HINSTANCE hInst, // указатель на текущий экземпляр
     return message.wParam;// возвращаем код выхода из приложения
 }
 
-LRESULT CALLBACK WindowProcess(HWND hWindow, // дескриптор окна
-    UINT uMessage,  // идентификатор сообщения
+LRESULT CALLBACK WindowProcess(HWND hWindow, 
+    UINT uMessage,  
     WPARAM wParameter,
-    LPARAM lParameter)  // второй параметр сообщения
+    LPARAM lParameter)  
 {
     HDC hDeviceContext; // создаём дескриптор ориентации текста на экране
     PAINTSTRUCT paintStruct;// структура, сод-щая информацию о клиентской области (размеры, цвет и тп)
@@ -115,8 +92,8 @@ LRESULT CALLBACK WindowProcess(HWND hWindow, // дескриптор окна
         if (wParameter == IDB_Button1)
         {
             MessageBox(hWindow, L"Trying to start program", L"Program starting...", MB_OK);
-            //start first program
 
+            //start first program
             STARTUPINFO cif;
             ZeroMemory(&cif, sizeof(STARTUPINFO));
             PROCESS_INFORMATION pi;
@@ -134,11 +111,7 @@ LRESULT CALLBACK WindowProcess(HWND hWindow, // дескриптор окна
             if (myProc != TRUE)
             {
                 MessageBox(hWindow, L"Failed to start program", L"Program starting...", MB_OK);
-            }
-
-            //EnumWindows(EnumWindowsProc, pi.dwProcessId); 
-            
-
+            }          
         }
         if (wParameter == IDB_Button2)
         {
@@ -146,8 +119,7 @@ LRESULT CALLBACK WindowProcess(HWND hWindow, // дескриптор окна
             hwndServer = FindWindowEx(0, 0, L"My class", 0);
             DWORD b = GetLastError();
             if (!hwndServer) {
-            //if (!WindowHandle) {
-                MessageBox(NULL, L"Ошибка связи!", L"SPO-Lab2.exe", MB_OK);
+                MessageBox(NULL, L"Can't find!", L"Test4.exe", MB_OK);
             }
             else { 
                 int len = 256;  //размер text
@@ -155,7 +127,6 @@ LRESULT CALLBACK WindowProcess(HWND hWindow, // дескриптор окна
                     char symbol = (char)text[i];
                     if (symbol == '\0') break;
                     LRESULT test = SendMessage(hwndServer, WM_CHAR, symbol, 0);
-                    //LRESULT test = SendMessage(WindowHandle, WM_CHAR, text[i], 0);
                 }
             }
         }
@@ -202,8 +173,6 @@ void AddButton(HWND hWindow)
 
 void AddControls(HWND hWindow) 
 {
-    //HWND hEdit;
-
     CreateWindow(L"static",
         L"Enter data for first program:",
         WS_VISIBLE | WS_CHILD | WS_BORDER | SS_CENTER,
@@ -218,7 +187,7 @@ void AddControls(HWND hWindow)
 
     hEdit = CreateWindow( L"Edit",
         L"Your text",
-        WS_VISIBLE | WS_CHILD | WS_BORDER | SS_CENTER | /*ES_MULTILINE |*/ ES_AUTOVSCROLL | ES_AUTOHSCROLL,
+        WS_VISIBLE | WS_CHILD | WS_BORDER | SS_CENTER | ES_AUTOVSCROLL | ES_AUTOHSCROLL,
         200,
         150,
         200,

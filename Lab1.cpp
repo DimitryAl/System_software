@@ -2,7 +2,6 @@
 #include <string>
 
 
-
 LRESULT CALLBACK WindowProcess(HWND,// дескриптор окошка
     UINT,// сообщение, посылаемое ќ—
     WPARAM,// параметры
@@ -10,12 +9,11 @@ LRESULT CALLBACK WindowProcess(HWND,// дескриптор окошка
 
 LPSTR lpArgv;
 
-int WINAPI WinMain(HINSTANCE hInst, // указатель на текущий экземпл€р
-    HINSTANCE hPrevInst, /// указатель на предыдущйи запушенный экземпл€р
-    LPSTR pCommandLine, // нужен дл€ запуска окошка в режиме командной строки
-    int nCommandShow)  // режим отображени€ окна
-{
-    
+int WINAPI WinMain(HINSTANCE hInst, 
+    HINSTANCE hPrevInst, 
+    LPSTR pCommandLine,
+    int nCommandShow)  
+{    
     lpArgv = GetCommandLine();
     if (NULL == lpArgv)
     {
@@ -23,9 +21,9 @@ int WINAPI WinMain(HINSTANCE hInst, // указатель на текущий экземпл€р
     }
 
     TCHAR className[] = "My class";
-    HWND hWindow; // создаЄм дескриптор будущего окошка
-    MSG message; // создЄм экземпл€р структуры MSG дл€ обработки сообщений
-    WNDCLASSEX windowClass;// создаЄм экземпл€р, дл€ обращени€ к членам класса WNDCLASSEX
+    HWND hWindow;
+    MSG message; 
+    WNDCLASSEX windowClass;
     windowClass.cbSize = sizeof(windowClass);
     windowClass.style = CS_HREDRAW | CS_VREDRAW;
     windowClass.lpfnWndProc = WindowProcess;
@@ -39,11 +37,9 @@ int WINAPI WinMain(HINSTANCE hInst, // указатель на текущий экземпл€р
     windowClass.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
     windowClass.hInstance = hInst;
     if (!RegisterClassEx(&windowClass)) {
-        // в случае отсутстви€ регистрации класса:
         MessageBox(NULL, "Ќе получилось зарегистрировать класс!", "ќшибка", MB_OK);
         return NULL;
     }
-    // ‘ункци€, создающа€ окошко:O
     hWindow = CreateWindow(className,
         "Symbol input program",
         WS_OVERLAPPEDWINDOW,
@@ -59,14 +55,14 @@ int WINAPI WinMain(HINSTANCE hInst, // указатель на текущий экземпл€р
         MessageBox(NULL, "Ќе получилось создать окно!", "ќшибка", MB_OK);
         return NULL;
     }
-    ShowWindow(hWindow, nCommandShow);// отображаем окошко
-    UpdateWindow(hWindow);// обновл€ем окошко
-    while (GetMessage(&message, NULL, NULL, NULL)) { // извлекаем сообщени€ из очереди, посылаемые фу-ци€ми, ќ—
-        TranslateMessage(&message);// интерпретируем сообщени€
-        DispatchMessage(&message);// передаЄм сообщени€ обратно ќ—
+    ShowWindow(hWindow, nCommandShow);
+    UpdateWindow(hWindow);
+    while (GetMessage(&message, NULL, NULL, NULL)) { 
+        TranslateMessage(&message);
+        DispatchMessage(&message);
     }
     //LocalFree(lpArgv);
-    return message.wParam;// возвращаем код выхода из приложени€
+    return message.wParam;
 }
 
 LRESULT CALLBACK WindowProcess(HWND hWindow, // дескриптор окна
@@ -74,28 +70,29 @@ LRESULT CALLBACK WindowProcess(HWND hWindow, // дескриптор окна
     WPARAM wParameter,  // первый параметр сообщени€
     LPARAM lParameter)  // второй параметр сообщени€
 {
-    HDC hDeviceContext; // создаЄм дескриптор ориентации текста на экране
-    PAINTSTRUCT paintStruct;// структура, сод-ща€ информацию о клиентской области (размеры, цвет и тп)
-    RECT rectPlace; // стр-ра, определ€юща€ размер клиентской области
-    HFONT hFont; //дескриптор шрифта
+    HDC hDeviceContext; 
+    PAINTSTRUCT paintStruct;
+    RECT rectPlace; 
+    HFONT hFont;
 
     static PTCHAR text; //PTCHAR Ч указатель на тип TCHAR.
     static int size = 0;
     static int fontsize = 20;
 
+    static int d = 0;
+    static int e = 0;
+    static int n = 0;
+
     switch (uMessage)
     {
     case WM_CREATE:
-        
-        //text = (PTCHAR)GlobalAlloc(GPTR, 50000 * sizeof(TCHAR));
         text = lpArgv;
         size = strlen(text);
         break;
-    case WM_PAINT: // если нужно нарисовать, то:
-        hDeviceContext = BeginPaint(hWindow, &paintStruct);// инициализируем контекст устройства
-        GetClientRect(hWindow, &rectPlace);// получаем ширину и высоту области дл€ рисовани€
-        SetTextColor(hDeviceContext, NULL);// устанавливаем цвет контекстного устройства
-        //мы мен€ем шрифт, и размер буквы.
+    case WM_PAINT:
+        hDeviceContext = BeginPaint(hWindow, &paintStruct);
+        GetClientRect(hWindow, &rectPlace);
+        SetTextColor(hDeviceContext, NULL);
         hFont = CreateFont(fontsize, 0, 0, 0, 0, 0, 0, 0,
             DEFAULT_CHARSET,
             0, 0, 0, VARIABLE_PITCH,
@@ -104,9 +101,7 @@ LRESULT CALLBACK WindowProcess(HWND hWindow, // дескриптор окна
         if (wParameter != VK_RETURN)
             DrawText(hDeviceContext,
                 (LPCSTR)text,
-                //lpArgv,
                 size,
-                //-1,
                 &rectPlace, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
         EndPaint(hWindow, &paintStruct);
         break;
@@ -115,13 +110,11 @@ LRESULT CALLBACK WindowProcess(HWND hWindow, // дескриптор окна
         {
         case VK_DOWN:
             //уменьшалс€ размер шрифта
-            if (fontsize != 10)
-                fontsize = fontsize - 10;
+            if (fontsize != 10)  fontsize = fontsize - 10;
             break;
         case VK_UP:
             //увеличивалс€ размер шрифта
-            if (fontsize != 200)
-                fontsize += 10;
+            if (fontsize != 200) fontsize += 10;
             break;
         default: break;
         }
@@ -136,6 +129,12 @@ LRESULT CALLBACK WindowProcess(HWND hWindow, // дескриптор окна
         case VK_BACK:
             if (size != 0)
                 size--;
+            break;
+        case 0x2B:
+            if (fontsize != 200) fontsize += 10;
+            break;
+        case 0x2D:
+            if (fontsize != 10) fontsize -= 10;
             break;
         default:
             text[size] = (char)wParameter;
