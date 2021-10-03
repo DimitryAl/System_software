@@ -17,9 +17,11 @@ class Polyeuctus < Interface
         #@name = name
         puts "This is Polyeuctus"
         while true
-            if MakeCall() 
-                break  #Пытается дозвониться до кого-то и если успешно, то перестает
-            end
+            # if MakeCall() 
+            #     break  #Пытается дозвониться до кого-то и если успешно, то перестает
+            # end
+            $test.down!(1)
+            puts $my_variable
         end    
     end
 
@@ -68,20 +70,15 @@ class Girlfriend < Interface
 
 end
 
-puts "Program starting"
-
 
 N = 3
-
-Semaphore.new(N)
+$my_variable = 10   #global variable
+$test = Semaphore.new(N)
 
 threads = []
 threads << Thread.new {pol = Polyeuctus.new}
-N = 3
 for i in (1..N)
-    threads << Thread.new {Grandmother.new(1)}
+    threads << Thread.new {granny = Grandmother.new(i)}
 end
 
 threads.each { |thread| thread.join}
-
-puts "Program end"
