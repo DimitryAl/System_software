@@ -185,9 +185,9 @@ end
 
 
 
-girlfriend_number = 2   # кол-во девушек
+girlfriend_number = 3   # кол-во девушек
 granny_number = 2       # кол-во бабушек
-n = 4                   # кол-во семафоров
+n = 2 + girlfriend_number                   # кол-во семафоров
 
 $confirmation = [false]*n
 $confirmation[0] = true
@@ -203,37 +203,17 @@ threads = []
 threads << Thread.new {Polyeuctus.new('Polyeuctus', $semaphore_array[0], 0)}
 threads << Thread.new {Mother.new('Mother', $semaphore_array[1], 1)}
 
-# for i in (1..granny_number)
-#     $names[i+1] = 'Granny' + i.to_s
-#     $threads << Thread.new {granny = Grandmother.new('Granny' + i.to_s, $semaphore_array[i+1], i+1)}
-# end
-
-# РАБОТАЕТ
-# $names[2] = 'Girlfriend_' + 1.to_s
-# $threads << Thread.new {Girlfriend.new('Girlfriend_' + 1.to_s, $semaphore_array[2], 2)}
-# $names[3] = 'Girlfriend_' + 2.to_s
-# $threads << Thread.new {Girlfriend.new('Girlfriend_' + 2.to_s, $semaphore_array[3], 3)}
-
-# ХЗ ПОЧЧЕМУ НЕ РАБОТАЕТ
-# for i in (1..girlfriend_number)
-#     $names[i+1] = 'Girlfriend_' + (i).to_s
-#     $threads << Thread.new {Girlfriend.new('Girlfriend_' + i.to_s, $semaphore_array[i+1], i+1)}
-# end
-
-# ХЗ ПОЧЕМУ НЕ РАБОТАЕТ
-# i = 2
-# while i < girlfriend_number + 2
-#     $names[i] = 'Girlfriend_' + (i-1).to_s
-#     $threads << Thread.new {Girlfriend.new('Girlfriend_' + (i-1).to_s, $semaphore_array[i], i)}
-#     i = i + 1
-# end 
 
 
-2.times do |i|
+girlfriend_number.times do |i|
     $names[i+2] = 'Girlfriend_' + (i+1).to_s
     threads << Thread.new {Girlfriend.new('Girlfriend_' + (i+1).to_s, $semaphore_array[i+2], i+2)}
 end
 
+# for i in (1..granny_number)
+#     $names[i+1] = 'Granny' + i.to_s
+#     $threads << Thread.new {granny = Grandmother.new('Granny' + i.to_s, $semaphore_array[i+1], i+1)}
+# end
 
 threads.each { |thread| thread.join}
 
