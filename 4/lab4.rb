@@ -97,6 +97,7 @@ class Mother < Interface
                 puts time + "\t" + @name + ' got confirmation'
                 break
             end  
+            # мб перед MakeCall сделать @phone.up!(1) у всех классов
             res = MakeCall(@number)    
             if res[0] == true
                 time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
@@ -198,9 +199,10 @@ for i in (1..n)
     $semaphore_array << Semaphore.new(1) 
 end
 
-$threads = []
-$threads << Thread.new {Polyeuctus.new('Polyeuctus', $semaphore_array[0], 0)}
-$threads << Thread.new {Mother.new('Mother', $semaphore_array[1], 1)}
+threads = []
+threads << Thread.new {Polyeuctus.new('Polyeuctus', $semaphore_array[0], 0)}
+threads << Thread.new {Mother.new('Mother', $semaphore_array[1], 1)}
+
 # for i in (1..granny_number)
 #     $names[i+1] = 'Granny' + i.to_s
 #     $threads << Thread.new {granny = Grandmother.new('Granny' + i.to_s, $semaphore_array[i+1], i+1)}
@@ -213,10 +215,10 @@ $threads << Thread.new {Mother.new('Mother', $semaphore_array[1], 1)}
 # $threads << Thread.new {Girlfriend.new('Girlfriend_' + 2.to_s, $semaphore_array[3], 3)}
 
 # ХЗ ПОЧЧЕМУ НЕ РАБОТАЕТ
-for i in (2..3)
-    $names[i] = 'Girlfriend_' + i.to_s
-    $threads << Thread.new {Girlfriend.new('Girlfriend_' + i.to_s, $semaphore_array[i], i)}
-end
+# for i in (1..girlfriend_number)
+#     $names[i+1] = 'Girlfriend_' + (i).to_s
+#     $threads << Thread.new {Girlfriend.new('Girlfriend_' + i.to_s, $semaphore_array[i+1], i+1)}
+# end
 
 # ХЗ ПОЧЕМУ НЕ РАБОТАЕТ
 # i = 2
@@ -226,7 +228,14 @@ end
 #     i = i + 1
 # end 
 
-$threads.each { |thread| thread.join}
+
+2.times do |i|
+    $names[i+2] = 'Girlfriend_' + (i+1).to_s
+    threads << Thread.new {Girlfriend.new('Girlfriend_' + (i+1).to_s, $semaphore_array[i+2], i+2)}
+end
+
+
+threads.each { |thread| thread.join}
 
 # for i in (0..n-1)
 #     puts
