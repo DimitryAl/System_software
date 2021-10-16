@@ -11,9 +11,9 @@ class Interface
 
     def MakeCall    #сделать звонок
         # обращаемся к случайному элементу массива, если count == 0, то false,  иначе true        
-        #n = rand($threads.length)
-        n = 1
+        n = rand($threads.length)
         test =  $threads[n]
+        puts test
         return true
         # if $threads[n].phone.count == 0
             
@@ -28,7 +28,7 @@ class Polyeuctus < Interface
     def initialize(name, phone)
         @name = name
         @phone = phone
-        puts 'This is ' + @name
+        #puts 'This is ' + @name
                         
         while true  #Пытается дозвониться до кого-то и если успешно, то перестает
             puts @name + ' trying to call someone'
@@ -37,7 +37,7 @@ class Polyeuctus < Interface
                 sleep(2)
                 break
             else
-                puts name + ' sleeps for 2'
+                puts 'Call failed, ' + name + ' sleeps for 2'
                 Wait()
             end
         end    
@@ -51,7 +51,7 @@ class Mother < Interface
         @name = name
         @phone = phone 
         
-        puts 'This is ' + @name
+        #puts 'This is ' + @name
 
     end
     
