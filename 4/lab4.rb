@@ -14,7 +14,6 @@ class Interface
     attr_accessor :name, 
                   :phone,
                   :number
-                  #:confirm
 
     def Wait(x)
         sleep(x)
@@ -86,7 +85,6 @@ class Mother < Interface
         @name = name
         @phone = phone 
         @number = number
-        #@confirm = false
 
         while true
             while @phone.count != 0
@@ -97,7 +95,7 @@ class Mother < Interface
                 puts time + "\t" + @name + ' got confirmation'
                 break
             end  
-            # мб перед MakeCall сделать @phone.up!(1) у всех классов
+            # мб перед MakeCall сделать @phone.up!(1) у всех классов???
             res = MakeCall(@number)    
             if res[0] == true
                 time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
@@ -125,21 +123,23 @@ class Grandmother < Interface
         @name = name
         @phone = phone
         @number = number
-        #@confirm = false
-
+        
         while true
             while @phone.count != 0
-                Wait(1)
             end
+            
             res = MakeCall(@number)
             if res[0] == true
-                puts @name + ' successfully called to ' + $names[res[1]]
+                time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
+                puts time + "\t" + @name + ' successfully called to ' + $names[res[1]]
                 Wait(5)
+                time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
+                puts time + "\t" + @name + ' finished call'
                 $semaphore_array[res[1]].down!(1)
                 @phone.down!(1)
-
             else
-                puts 'Call failed, ' + @name + ' waits'
+                time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
+                puts time + "\t" + 'Call failed, ' + @name + ' waits'
                 Wait(2)
             end
         end
@@ -203,11 +203,14 @@ threads = []
 threads << Thread.new {Polyeuctus.new('Polyeuctus', $semaphore_array[0], 0)}
 threads << Thread.new {Mother.new('Mother', $semaphore_array[1], 1)}
 
-
-
 girlfriend_number.times do |i|
     $names[i+2] = 'Girlfriend_' + (i+1).to_s
     threads << Thread.new {Girlfriend.new('Girlfriend_' + (i+1).to_s, $semaphore_array[i+2], i+2)}
+end
+
+granny_number.times do |i|
+    $names[i+2+girlfriend_number] = 'Granny_' + (i+1).to_s
+    threads << Thread.new {Grandmother.new('Granny_' + (i+1).to_s, $semaphore_array[i+2+girlfriend_number], i+2+girlfriend_number)}
 end
 
 # for i in (1..granny_number)
@@ -216,16 +219,3 @@ end
 # end
 
 threads.each { |thread| thread.join}
-
-# for i in (0..n-1)
-#     puts
-#     print $names[i]
-#     print "\t"
-#     print $semaphore_array[i].count
-#     print "\t"
-#     print $confirmation[i]
-#     print "\t"
-#     puts
-# end
-
-puts $threads
