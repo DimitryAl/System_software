@@ -37,4 +37,4 @@ class Semaphore
       end
     end
   end
-end 
+end
