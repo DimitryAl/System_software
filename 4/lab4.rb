@@ -3,7 +3,7 @@ require 'thread'
 
 def generateNumber(x)
     t = rand($semaphore_array.length)
-    while (t == x) || ( (x != 0) && (t == 0) )
+    while (t == x) || (t == 0)
         t = rand($semaphore_array.length)
     end
     return t
@@ -20,14 +20,14 @@ class Interface
     end
 
     def MakeCall(x)    #сделать звонок
-        #сделать так, чтобы никто не мог позвонить полуэкту что-то типо if n == 0 генерить заново
+        @phone.up!(1)
         n = generateNumber(x)
         res = $semaphore_array[n]
         time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
         puts time + "\t" + @name + ' is calling to ' + $names[n]
         if res.count == 0
             res.up!(1)
-            @phone.up!
+        #    @phone.up!
             if @name == 'Polyeuctus'        #тот, кому позвонил Полуэкт, получает подтверждение
                 $confirmation[n] = true
             end
@@ -39,6 +39,7 @@ class Interface
             end
             return true, n
         else
+            @phone.down!(1)
             return false, -1
         end
     end
@@ -119,20 +120,27 @@ end
 class Grandmother < Interface
     attr_accessor :connections
 
-    def initialize(name, phone, number)
+    def initialize(name, phone, number, n)
         @name = name
         @phone = phone
         @number = number
+        @connections = [false]*n
+        @connections[@number] = true
         
         while true
             while @phone.count != 0
             end
-            
+            if !(@connections.include? false)
+                time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
+                puts time + "\t" + @name + ' got confirmation from all other people'
+                break
+            end
             res = MakeCall(@number)
             if res[0] == true
                 time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
                 puts time + "\t" + @name + ' successfully called to ' + $names[res[1]]
                 Wait(5)
+                @connections[res[1]] = true
                 time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
                 puts time + "\t" + @name + ' finished call'
                 $semaphore_array[res[1]].down!(1)
@@ -187,7 +195,7 @@ end
 
 girlfriend_number = 3   # кол-во девушек
 granny_number = 2       # кол-во бабушек
-n = 2 + girlfriend_number                   # кол-во семафоров
+n = 2 + girlfriend_number + granny_number                   # кол-во семафоров
 
 $confirmation = [false]*n
 $confirmation[0] = true
@@ -210,12 +218,7 @@ end
 
 granny_number.times do |i|
     $names[i+2+girlfriend_number] = 'Granny_' + (i+1).to_s
-    threads << Thread.new {Grandmother.new('Granny_' + (i+1).to_s, $semaphore_array[i+2+girlfriend_number], i+2+girlfriend_number)}
+    threads << Thread.new {Grandmother.new('Granny_' + (i+1).to_s, $semaphore_array[i+2+girlfriend_number], i+2+girlfriend_number, n)}
 end
-
-# for i in (1..granny_number)
-#     $names[i+1] = 'Granny' + i.to_s
-#     $threads << Thread.new {granny = Grandmother.new('Granny' + i.to_s, $semaphore_array[i+1], i+1)}
-# end
 
 threads.each { |thread| thread.join}
