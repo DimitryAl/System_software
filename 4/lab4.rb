@@ -125,6 +125,7 @@ class Grandmother < Interface
         @phone = phone
         @number = number
         @connections = [false]*n
+        @connections[0] = true
         @connections[@number] = true
         
         while true
@@ -193,7 +194,7 @@ end
 
 
 
-girlfriend_number = 3   # кол-во девушек
+girlfriend_number = 1   # кол-во девушек
 granny_number = 2       # кол-во бабушек
 n = 2 + girlfriend_number + granny_number                   # кол-во семафоров
 
