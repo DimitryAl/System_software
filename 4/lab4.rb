@@ -20,14 +20,13 @@ class Interface
     end
 
     def MakeCall(x)    #сделать звонок
-        @phone.up!(1)
+        #@phone.up!(1)
         n = generateNumber(x)
         res = $semaphore_array[n]
         time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
         puts time + "\t" + @name + ' is calling to ' + $names[n]
         if res.count == 0
             res.up!(1)
-        #    @phone.up!
             if @name == 'Polyeuctus'        #тот, кому позвонил Полуэкт, получает подтверждение
                 $confirmation[n] = true
             end
@@ -55,12 +54,12 @@ class Polyeuctus < Interface
         @number = number
 
         while true  #Пытается дозвониться до кого-то и если успешно, то перестает
-            while @phone.count != 0
-                #Wait(1)
-            end
+            # while @phone.count != 0
+            #     #Wait(1)
+            # end
+            @phone.up!(1)
             res = MakeCall(@number)   
             if res[0] == true
-                #puts @name + ' successfully called to ' + $names[res[1]]
                 time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
                 puts time + "\t" + @name + ' successfully called to ' + $names[res[1]]
                 Wait(2)
@@ -72,6 +71,7 @@ class Polyeuctus < Interface
             else
                 time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
                 puts time + "\t" + 'Call failed, ' + @name + ' waits'
+                #@phone.down!(1)
                 Wait(2)
             end
         end    
@@ -88,15 +88,16 @@ class Mother < Interface
         @number = number
 
         while true
-            while @phone.count != 0
-                #Wait(1)
-            end
+            # while @phone.count != 0
+            #     #Wait(1)
+            # end
+            @phone.up!(1)
             if $confirmation[@number] == true
                 time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
                 puts time + "\t" + @name + ' got confirmation'
+                @phone.down!(1)
                 break
             end  
-            # мб перед MakeCall сделать @phone.up!(1) у всех классов???
             res = MakeCall(@number)    
             if res[0] == true
                 time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
@@ -109,6 +110,7 @@ class Mother < Interface
             else
                 time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
                 puts time + "\t" + 'Call failed, ' + @name + ' waits'
+                #@phone.down!(1)
                 Wait(2)
             end
         end
@@ -129,11 +131,14 @@ class Grandmother < Interface
         @connections[@number] = true
         
         while true
-            while @phone.count != 0
-            end
+            # while @phone.count != 0
+            # end
+            @phone.up!(1)
+
             if !(@connections.include? false)
                 time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
                 puts time + "\t" + @name + ' got confirmation from all other people'
+                @phone.down!(1)
                 break
             end
             res = MakeCall(@number)
@@ -149,6 +154,7 @@ class Grandmother < Interface
             else
                 time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
                 puts time + "\t" + 'Call failed, ' + @name + ' waits'
+               # @phone.down!(1)
                 Wait(2)
             end
         end
@@ -165,12 +171,15 @@ class Girlfriend < Interface
         @number = number
         
         while true  
-            while @phone.count != 0
-                #Wait(1)
-            end
+            # while @phone.count != 0
+            #     #Wait(1)
+            # end
+            @phone.up!(1)
+
             if $confirmation[@number] == true
                 time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
                 puts time + "\t" + @name + ' got confirmation'
+                @phone.down!(1)
                 break
             end 
             res = MakeCall(@number)
@@ -185,6 +194,8 @@ class Girlfriend < Interface
             else
                 time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
                 puts time + "\t" + 'Call failed, ' + @name + ' waits'
+               # @phone.down!(1)
+
                 Wait(2)
             end
         end
