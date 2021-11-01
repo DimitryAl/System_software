@@ -48,7 +48,7 @@ class Caller < Interface
     def initialize(name, number)
         @name = name
         @number = number
-        @smth = new_cond
+        @smth_test = new_cond
     end
 
     def polyeuctus()
@@ -56,7 +56,7 @@ class Caller < Interface
             
             mon_synchronize do
                 if $phone_array[@number] != 0
-                    @smth.wait
+                    @smth_test.wait
                 end
                 $phone_array[@number] += 1 
                 
@@ -75,7 +75,7 @@ class Caller < Interface
 
                 mon_synchronize do 
                     puts "broadcast here"
-                    @smth.broadcast
+                    @smth_test.signal
                 end
                 break
 
@@ -93,7 +93,7 @@ class Caller < Interface
             mon_synchronize do
                 if $phone_array[@number] != 0
                     puts 'talking with someone'
-                    @smth.wait()
+                    @smth_test.wait()
                     puts ' stop talking with someone'
                 end
                 $phone_array[@number] += 1
@@ -116,7 +116,7 @@ class Caller < Interface
 
                 mon_synchronize do 
                 $phone_array[@number] -= 1
-                @smth.broadcast
+                @smth_test.broadcast
                 end
             else
                 time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
