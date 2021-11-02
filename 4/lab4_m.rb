@@ -13,21 +13,21 @@ end
 
 class Interface 
 
-    attr_accessor :name, 
-                  :phone,
-                  :number
+    # attr_accessor :name, 
+    #               :phone,
+    #               :number
 
     def Wait(x)
         sleep(x)
     end
 
-    def MakeCall(x)    #сделать звонок
+    def MakeCall(x, name)    #сделать звонок
         n = generateNumber(x)
         time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
-        puts time + "\t" + @name + ' is calling to ' + $names[n]
+        puts time + "\t" + name + ' is calling to ' + $names[n]
         if $phone_array[n] == 0
             $phone_array[n] += 1
-            if @name == 'Polyeuctus'        #тот, кому позвонил Полуэкт, получает подтверждение
+            if name == 'Polyeuctus'        #тот, кому позвонил Полуэкт, получает подтверждение
                 $confirmation[n] = true
             end
             if $confirmation[n] == true
@@ -45,128 +45,177 @@ end
 class Caller < Interface
     include MonitorMixin
     
-    def initialize(name, number)
-        @name = name
-        @number = number
-        @smth_test = new_cond
+    def initialize(n)
+        #@smth_test = new_cond
+        @arr = []
+        for i in (1..n)
+            @smth = new_cond 
+            @arr << @smth   
+        end
     end
 
-    def polyeuctus()
+    def polyeuctus(name, number)
         while true  
             
             mon_synchronize do
-                if $phone_array[@number] != 0
-                    @smth_test.wait
+                if $phone_array[number] != 0
+                    @arr[number].wait
                 end
-                $phone_array[@number] += 1 
+                $phone_array[number] += 1 
                 
             end         
-            res = MakeCall(@number)   
+            res = MakeCall(number, name)   
             if res[0] == true
                 
                 time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
-                puts time + "\t" + @name + ' successfully called to ' + $names[res[1]]
+                puts time + "\t" + name + ' successfully called to ' + $names[res[1]]
                 Wait(2)
                 time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
-                puts time + "\t" + @name + ' finished call'
+                puts time + "\t" + name + ' finished call'
                 
-                $phone_array[res[1]] -= 1
-                $phone_array[@number] -= 1
+                # $phone_array[res[1]] -= 1
+                #$phone_array[number] -= 1
 
                 mon_synchronize do 
-                    puts "broadcast here"
-                    @smth_test.signal
+                    $phone_array[number] -= 1
+                    $phone_array[res[1]] -= 1
+                    @arr[res[1]].signal
                 end
                 break
 
             else
                 time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
-                puts time + "\t" + 'Call failed, ' + @name + ' waits'
+                puts time + "\t" + 'Call failed, ' + name + ' waits'
                 Wait(2)
             end
         end    
     end
 
 
-    def mother
+    def mother(name, number)
         while true 
             mon_synchronize do
-                if $phone_array[@number] != 0
-                    puts 'talking with someone'
-                    @smth_test.wait()
-                    puts ' stop talking with someone'
+                if $phone_array[number] != 0
+                    @arr[number].wait
                 end
-                $phone_array[@number] += 1
+                $phone_array[number] += 1
             end
-            if $confirmation[@number] == true
+            if $confirmation[number] == true
                 time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
-                puts time + "\t" + @name + ' got confirmation'
-                $phone_array[@number] -= 1
+                puts time + "\t" + name + ' got confirmation'
+                $phone_array[number] -= 1
                 break
             end  
-            res = MakeCall(@number)  
+            res = MakeCall(number, name)  
             if res[0] == true
                 time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
-                puts time + "\t" + @name + ' successfully called to ' + $names[res[1]]
+                puts time + "\t" + name + ' successfully called to ' + $names[res[1]]
                 Wait(5)
                 time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
-                puts time + "\t" + @name + ' finished call'
+                puts time + "\t" + name + ' finished call'
                 
-                $phone_array[res[1]] -= 1
+               # $phone_array[res[1]] -= 1
 
                 mon_synchronize do 
-                $phone_array[@number] -= 1
-                @smth_test.broadcast
+                    $phone_array[number] -= 1
+                    $phone_array[res[1]] -= 1
+                    @arr[res[1]].signal
                 end
+                
             else
                 time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
-                puts time + "\t" + 'Call failed, ' + @name + ' waits'
+                puts time + "\t" + 'Call failed, ' + name + ' waits'
                 Wait(2)
             end
         end
     end
 
-    def girlfriend
+    def girlfriend(name, number)
+        
         while true  
             self.mon_synchronize do
-                if $phone_array[@number] != 0
-                    puts @name + 'talking with someone'
-                    @smth.wait
-                    puts @name + 'stop talking with someone'
+                if $phone_array[number] != 0
+                    @arr[number].wait
                 end
-                $phone_array[@number] += 1
+                $phone_array[number] += 1
            end
-            if $confirmation[@number] == true
+            if $confirmation[number] == true
                 time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
-                puts time + "\t" + @name + ' got confirmation'
-                $phone_array[@number] -= 1
+                puts time + "\t" + name + ' got confirmation'
+                $phone_array[number] -= 1
                 break
             end 
-            res = MakeCall(@number)
+            res = MakeCall(number, name)
             if res[0] == true
                 time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
-                puts time + "\t" + @name + ' successfully called to ' + $names[res[1]]
+                puts time + "\t" + name + ' successfully called to ' + $names[res[1]]
                 Wait(5)
                 time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
-                puts time + "\t" + @name + ' finished call'
-                $phone_array[res[1]] -= 1
-                $phone_array[@number] -= 1 
-                @smth.broadcast
+                puts time + "\t" + name + ' finished call'
+                # $phone_array[res[1]] -= 1
+                mon_synchronize do 
+                    $phone_array[number] -= 1
+                    $phone_array[res[1]] -= 1
+                    @arr[res[1]].signal
+                end
             else
                 time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
-                puts time + "\t" + 'Call failed, ' + @name + ' waits'
+                puts time + "\t" + 'Call failed, ' + name + ' waits'
+                
                 Wait(2)
             end
         end
     end
 
+    def grandmother(name, number, n)
+        
+        connections = [false]*n
+        connections[0] = true
+        connections[number] = true
+
+        while true
+            mon_synchronize do
+                if $phone_array[number] != 0
+                    @arr[number].wait
+                end
+                $phone_array[number] += 1
+            end
+
+            if !(connections.include? false)
+                time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
+                puts time + "\t" + name + ' got confirmation from all other people'
+                $phone_array[number] -= 1
+                break
+            end
+            res = MakeCall(number, name)
+            if res[0] == true
+                time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
+                puts time + "\t" + name + ' successfully called to ' + $names[res[1]]
+                Wait(5)
+                connections[res[1]] = true
+                time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
+                puts time + "\t" + name + ' finished call'
+                #$phone_array[res[1]] -= 1
+                mon_synchronize do
+                    $phone_array[number] -= 1
+                    $phone_array[res[1]] -= 1
+                    @arr[res[1]].signal
+                end
+            else
+                time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
+                puts time + "\t" + 'Call failed, ' + name + ' waits'
+                Wait(2)
+            end
+        end
+
+    end
 
 end
 
 
 
-girlfriend_number = 0   # кол-во девушек
-granny_number = 0       # кол-во бабушек
+girlfriend_number = 1   # кол-во девушек
+granny_number = 2       # кол-во бабушек
 n = 2 + girlfriend_number + granny_number                   
 
 $confirmation = [false]*n
@@ -175,31 +224,36 @@ $names = []*n
 $names[0] = 'Polyeuctus'
 $names[1] = 'Mother'
 $phone_array = [0]*n
-# for i in (1..n)
-#     $phone_array << 0
-# end
+
+
 
 threads = []
+c = Caller.new(n)
 threads << Thread.new {
-    p = Caller.new('Polyeuctus', 0)
-    p.polyeuctus
+    # p = Caller.new('Polyeuctus', 0)
+    # p.polyeuctus
+    c.polyeuctus('Polyeuctus', 0)
 }
 threads << Thread.new {
-    m = Caller.new('Mother', 1)
-    m.mother
+    # m = Caller.new('Mother', 1)
+    # m.mother
+    c.mother('Mother', 1)
 }
 
-# girlfriend_number.times do |i|
-#      $names[i+2] = 'Girlfriend_' + (i+1).to_s
-#      threads << Thread.new {
-#         g = Caller.new('Girlfriend_' + (i+1).to_s, i+2)
-#         g.girlfriend
-#     }
-# end
+girlfriend_number.times do |i|
+     $names[i+2] = 'Girlfriend_' + (i+1).to_s
+     threads << Thread.new {
+        # g = Caller.new('Girlfriend_' + (i+1).to_s, i+2)
+        # g.girlfriend
+        c.girlfriend($names[i+2], i+2)
+    }
+end
 
-# granny_number.times do |i|
-#     $names[i+2+girlfriend_number] = 'Granny_' + (i+1).to_s
-#     threads << Thread.new {Grandmother.new('Granny_' + (i+1).to_s, $phone_array[i+2+girlfriend_number], i+2+girlfriend_number, n)}
-# end
+granny_number.times do |i|
+    $names[i+2+girlfriend_number] = 'Granny_' + (i+1).to_s
+    threads << Thread.new {
+        c.grandmother($names[i+2+girlfriend_number], i+2+girlfriend_number, n)
+    }
+end
 
 threads.each { |thread| thread.join}
