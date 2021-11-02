@@ -13,10 +13,6 @@ end
 
 class Interface 
 
-    # attr_accessor :name, 
-    #               :phone,
-    #               :number
-
     def Wait(x)
         sleep(x)
     end
@@ -46,7 +42,6 @@ class Caller < Interface
     include MonitorMixin
     
     def initialize(n)
-        #@smth_test = new_cond
         @arr = []
         for i in (1..n)
             @smth = new_cond 
@@ -72,9 +67,6 @@ class Caller < Interface
                 Wait(2)
                 time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
                 puts time + "\t" + name + ' finished call'
-                
-                # $phone_array[res[1]] -= 1
-                #$phone_array[number] -= 1
 
                 mon_synchronize do 
                     $phone_array[number] -= 1
@@ -114,7 +106,6 @@ class Caller < Interface
                 time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
                 puts time + "\t" + name + ' finished call'
                 
-               # $phone_array[res[1]] -= 1
 
                 mon_synchronize do 
                     $phone_array[number] -= 1
@@ -152,7 +143,6 @@ class Caller < Interface
                 Wait(5)
                 time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
                 puts time + "\t" + name + ' finished call'
-                # $phone_array[res[1]] -= 1
                 mon_synchronize do 
                     $phone_array[number] -= 1
                     $phone_array[res[1]] -= 1

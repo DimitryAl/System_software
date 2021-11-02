@@ -20,7 +20,6 @@ class Interface
     end
 
     def MakeCall(x)    #сделать звонок
-        #@phone.up!(1)
         n = generateNumber(x)
         res = $semaphore_array[n]
         time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
@@ -29,9 +28,6 @@ class Interface
             res.up!(1)
             if @name == 'Polyeuctus'        #тот, кому позвонил Полуэкт, получает подтверждение
                 $confirmation[n] = true
-            end
-            if n == 0                       #если звонящий позвонил Полуэкту, то звонящий получает подтверждение
-                $confirmation[x] = true
             end
             if $confirmation[n] == true
                 $confirmation[x] = true
@@ -54,9 +50,6 @@ class Polyeuctus < Interface
         @number = number
 
         while true  #Пытается дозвониться до кого-то и если успешно, то перестает
-            # while @phone.count != 0
-            #     #Wait(1)
-            # end
             @phone.up!(1)
             res = MakeCall(@number)   
             if res[0] == true
@@ -71,7 +64,6 @@ class Polyeuctus < Interface
             else
                 time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
                 puts time + "\t" + 'Call failed, ' + @name + ' waits'
-                #@phone.down!(1)
                 Wait(2)
             end
         end    
@@ -88,9 +80,6 @@ class Mother < Interface
         @number = number
 
         while true
-            # while @phone.count != 0
-            #     #Wait(1)
-            # end
             @phone.up!(1)
             if $confirmation[@number] == true
                 time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
@@ -131,8 +120,6 @@ class Grandmother < Interface
         @connections[@number] = true
         
         while true
-            # while @phone.count != 0
-            # end
             @phone.up!(1)
 
             if !(@connections.include? false)
@@ -154,7 +141,6 @@ class Grandmother < Interface
             else
                 time = Time.new.hour.to_s + ':' + Time.new.min.to_s + ':' + Time.new.sec.to_s
                 puts time + "\t" + 'Call failed, ' + @name + ' waits'
-               # @phone.down!(1)
                 Wait(2)
             end
         end
@@ -171,9 +157,6 @@ class Girlfriend < Interface
         @number = number
         
         while true  
-            # while @phone.count != 0
-            #     #Wait(1)
-            # end
             @phone.up!(1)
 
             if $confirmation[@number] == true
