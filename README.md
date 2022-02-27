@@ -1,2 +1,1 @@
-# System_software
-Laboratory works 
+# Системное программное обеспечение
